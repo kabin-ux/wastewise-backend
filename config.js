@@ -30,6 +30,16 @@ export let PASS = process.env.PASS;
 
 export let VAPID_KEY = process.env.VAPID_KEY;
 
+export let FIREBASE_TYPE = process.env.FIREBASE_TYPE;
+export let FIREBASE_PROJECT_ID = process.env.FIREBASE_PROJECT_ID;
+export let FIREBASE_PRIVATE_KEY_ID = process.env.FIREBASE_PRIVATE_KEY_ID;
+export let FIREBASE_PRIVATE_KEY = process.env.FIREBASE_PRIVATE_KEY;
+export let FIREBASE_CLIENT_EMAIL = process.env.FIREBASE_CLIENT_EMAIL;
+export let FIREBASE_CLIENT_ID = process.env.FIREBASE_CLIENT_ID;
+export let FIREBASE_AUTH_URI = process.env.FIREBASE_AUTH_URI;
+export let FIREBASE_TOKEN_URI = process.env.FIREBASE_TOKEN_URI;
+export let FIREBASE_AUTH_PROVIDER_CERT_URL = process.env.FIREBASE_AUTH_PROVIDER_CERT_URL;
+export let FIREBASE_CLIENT_CERT_URL = process.env.FIREBASE_CLIENT_CERT_URL;
 
 export let CLOUDINARY_CLOUD_NAME = process.env.CLOUDINARY_CLOUD_NAME;
 export let CLOUDINARY_API_KEY = process.env.CLOUDINARY_API_KEY;
