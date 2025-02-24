@@ -30,7 +30,23 @@ const userSchema = new mongoose.Schema({
     required: true, // Assuming you're including password in the user model
   },
   verified: {
-    type: Boolean
+    type: Boolean,
+    default: false
+  },
+  profileImage: {
+    public_id: String,
+    url: String
+  },
+  fcmTokens: {
+    type: [String],
+    default: [],
+    validate: {
+      validator: function (tokens) {
+        // Check for duplicates within the array
+        return new Set(tokens).size === tokens.length;
+      },
+      message: 'Duplicate FCM tokens are not allowed'
+    }
   },
   refreshToken: {
     type: String
@@ -80,6 +96,9 @@ userSchema.methods.generateRefreshToken = function (userId, userType) {
     }
   )
 };
+
+// Remove any existing index on fcmTokens
+userSchema.index({ fcmTokens: 1 }, { unique: false, sparse: true, background: true });
 
 const User = mongoose.model("User", userSchema);
 export default User;

@@ -50,48 +50,55 @@ const driverSchema = new mongoose.Schema({
     verified: {
         type: Boolean
     },
+    profileImage: {
+        public_id: String,
+        url: String
+    },
     refreshToken: {
         type: String
-    }
+    },
+    fcmTokens: [{
+        type: String
+    }]
 });
 
 // Password Encryption
 driverSchema.pre('save', async function (next) {
-  if(!this.isModified('password')) return next();
+    if (!this.isModified('password')) return next();
 
-  this.password = await bcrypt.hash(this.password, 10);
-  next()
+    this.password = await bcrypt.hash(this.password, 10);
+    next()
 });
 
 // Check Password
-driverSchema.methods.isPasswordCorrect = async function(password){
-  return await bcrypt.compare(password, this.password)
+driverSchema.methods.isPasswordCorrect = async function (password) {
+    return await bcrypt.compare(password, this.password)
 };
 
 // Generate Access Token
-driverSchema.methods.generateAccessToken = function(userId, userType ){
-  return jwt.sign(
-      {
-        userId, userType 
-      },
-      ACCESS_TOKEN_SECRET,
-      {
-          expiresIn: "10d"
-      }
-  )
+driverSchema.methods.generateAccessToken = function (userId, userType) {
+    return jwt.sign(
+        {
+            userId, userType
+        },
+        ACCESS_TOKEN_SECRET,
+        {
+            expiresIn: "10d"
+        }
+    )
 };
 
 // Generate Refresh Token
-driverSchema.methods.generateRefreshToken = function(userId, userType) {
-  return jwt.sign(
-  {   
-    userId, userType 
-  },
-  REFRESH_TOKEN_SECRET,
-  {
-      expiresIn: "10d"
-  }
-)
+driverSchema.methods.generateRefreshToken = function (userId, userType) {
+    return jwt.sign(
+        {
+            userId, userType
+        },
+        REFRESH_TOKEN_SECRET,
+        {
+            expiresIn: "10d"
+        }
+    )
 };
 
 const Driver = mongoose.model("Driver", driverSchema);

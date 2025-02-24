@@ -10,6 +10,9 @@ import requestRouter from "./routes/requestRoute.js";
 import driverRouter from "./routes/driverRoute.js";
 import inventoryRouter from "./routes/inventoryRoute.js";
 import feedbackRouter from "./routes/feedbackRoute.js";
+import authRouter from "./routes/authRoute.js";
+import notificationRouter from "./routes/notificationRoute.js";
+import { multerErrorHandler } from "./middlewares/errorHandler.js";
 
 // Load environment variables
 dotenv.config();
@@ -21,12 +24,15 @@ app.use(express.json());
 app.use(cors());
 
 // Define routes
+app.use("/api/auth", authRouter);
 app.use("/api/users", userRouter);
 app.use("/api/admin", adminRouter);
 app.use("/api/drivers", driverRouter);
 app.use("/api/requests", requestRouter);
 app.use("/api/inventory", inventoryRouter);
 app.use("/api/feedbacks", feedbackRouter);
+app.use("/api/notifications", notificationRouter);
+app.use(multerErrorHandler);
 
 const runServer = async () => {
     try{
@@ -37,7 +43,7 @@ const runServer = async () => {
         await initializeAdmin();
 
         // Start server
-        app.listen(PORT || 5005, () => console.log(`Server running on port ${PORT}`));
+        app.listen(PORT || 5005);
     }catch(error) {
         console.error("Error while starting the server", error)
     }

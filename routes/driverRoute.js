@@ -1,9 +1,10 @@
 import { Router } from "express";
 import {
   refreshAccessToken,
-} from "../controllers/userControllers.js";
+} from "../controllers/userController.js";
 import {  authorizeUserType, verifyJWT } from "../middlewares/auth.js";
-import { addDrivers, deleteDriver, getAllDrivers, getCurrentDriver, loginDriver, updateDriver, updateDriverStatus, verifyEmail } from "../controllers/driverController.js";
+import { addDrivers, deleteDriver, getAllDrivers, getCurrentDriver, loginDriver, updateDriver, updateDriverStatus, uploadProfileImage, verifyEmail } from "../controllers/driverController.js";
+import { upload } from "../config/cloudinary.js";
 
 // Create a new router
 const driverRouter = Router();
@@ -12,7 +13,7 @@ const driverRouter = Router();
 driverRouter.get("/", verifyJWT, authorizeUserType('admin'), getAllDrivers);
 driverRouter.get("/current-driver", verifyJWT, authorizeUserType('driver'), getCurrentDriver);
 
-// get feedback by id
+driverRouter.post("/:did/upload-image", verifyJWT, upload.single('profileImage'), uploadProfileImage ); 
 driverRouter.put("/:did", verifyJWT, authorizeUserType('admin', 'driver'), updateDriver);
 driverRouter.put("/:did/status", verifyJWT, authorizeUserType('admin', 'driver'), updateDriverStatus);
 driverRouter.delete("/:did", verifyJWT, authorizeUserType('admin'), deleteDriver);

@@ -7,10 +7,11 @@ import {
   loginUser,
   refreshAccessToken,
   updateUser,
+  uploadProfileImage,
   verifyEmail,
-} from "../controllers/userControllers.js";
-import Token from "../models/emailToken.js";
+} from "../controllers/userController.js";
 import { authorizeUserDetailsEdit, authorizeUserType, verifyJWT } from "../middlewares/auth.js";
+import { upload } from "../config/cloudinary.js";
 // import { authorizeUserDetailsEdit, authorizeUserType, verifyJWT } from "../middlewares/auth.js";
 
 // Create a new router
@@ -20,6 +21,7 @@ const userRouter = Router();
 userRouter.get("/", verifyJWT, authorizeUserType('admin'), getAllUsers); 
 
 userRouter.get("/current-user", verifyJWT, authorizeUserType('admin', 'user'), getCurrentUser);
+userRouter.post("/:uid/upload-image", verifyJWT, upload.single('profileImage'), uploadProfileImage ); 
 userRouter.put("/:uid", verifyJWT, authorizeUserType('admin', 'user'), authorizeUserDetailsEdit, updateUser); 
 userRouter.delete("/:uid", verifyJWT, authorizeUserType('admin'), deleteUser); 
 

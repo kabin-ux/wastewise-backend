@@ -1,10 +1,34 @@
 import mongoose from "mongoose";
 
+const adminResponseSchema = new mongoose.Schema({
+    adminId: {
+        type: String,
+        required: true
+    },
+    adminName: {
+        type: String,
+        required: true
+    },
+    message: {
+        type: String,
+        required: true,
+        trim: true,
+        maxlength: [500, "Response cannot exceed 500 characters"]
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now
+    }
+});
+
 const feedbackSchema = new mongoose.Schema({
     userId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User", // Reference to User model
         required: true
+    },
+    userName: {
+        type: String
     },
     requestId: {
         type: mongoose.Schema.Types.ObjectId,
@@ -39,12 +63,8 @@ const feedbackSchema = new mongoose.Schema({
         enum: ['High', 'Medium', 'Low'],
         default: 'Medium'
     },
-    adminResponse: {
-        type: String,
-        trim: true,
-        maxlength: [500, "Response cannot exceed 500 characters"],
-        default: null
-    },
+    adminResponse: [adminResponseSchema], // Changed from String to Array of adminResponseSchema
+
     attachments: [{
         type: String // Store URLs of uploaded images/videos
     }],
