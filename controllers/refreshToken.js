@@ -1,8 +1,5 @@
 import jwt from 'jsonwebtoken';
 import { ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET } from "../config.js";
-import Admin from "../models/adminModel.js";
-import Driver from "../models/driverModel.js";
-import User from "../models/userModel.js";
 import { generateAccessToken, generateRefreshToken } from '../utils/generateToken.js';
 
 export const refreshAccessToken = async (req, res) => {

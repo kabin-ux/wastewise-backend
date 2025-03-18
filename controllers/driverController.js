@@ -3,11 +3,12 @@ import { generateAccessToken, generateRefreshToken } from "../utils/generateToke
 import Driver from '../models/driverModel.js';
 import Token from '../models/emailToken.js';
 import crypto from 'crypto';
-import { BASE_URL } from '../config.js';
+import { BASE_URL, REFRESH_TOKEN_SECRET } from '../config.js';
 import { sendEmail } from '../utils/sendVerificationEmail.js';
 import DriverToken from '../models/driverToken.js';
 import { cloudinary } from '../config/cloudinary.js';
 import streamifier from 'streamifier';
+import jwt from 'jsonwebtoken';
 
 
 // Get all drivers
@@ -512,5 +513,53 @@ export const updateDriverStatus = async (req, res) => {
             Result: []
         })
     }
-
 }
+
+export const refreshAccessToken = async (req, res) => {
+  try {
+    const incomingToken = req.headers.authorization?.split(" ")[1];
+    const incomingRefreshToken = incomingToken;
+
+    if (!incomingRefreshToken) {
+      return res.status(400).json({
+        errorMessage: "Unauthorized request"
+      })
+    }
+    //verify tokens
+    const decodedToken = jwt.verify(incomingRefreshToken, REFRESH_TOKEN_SECRET);
+
+    const currentTime = Math.floor(Date.now() / 1000);
+
+
+    //check if refresh token expired or not
+    if (decodedToken.exp < currentTime) {
+      return res.status(400).json({
+        errorMEssage: "Refresh token has expired"
+      })
+    }
+
+
+    const driver = await Driver.findById(decodedToken?.userId);
+
+    const userType = decodedToken?.userType;
+
+    if (!driver) {
+      res.status(400).json({
+        errorMessage: "Invalid refresh token"
+      })
+    }
+
+    const newAccessToken = await generateAccessToken(driver._id, userType);
+
+    return res.status(200).json({
+      newAccessToken,
+      message: "Access token refreshed"
+    })
+
+  } catch (error) {
+    console.error("Error occured", error);
+    res.status(401).json({
+      ErrorMessage: "Invalid refresh token"
+    })
+  }
+};

@@ -1,9 +1,6 @@
 import { Router } from "express";
-import {
-  refreshAccessToken,
-} from "../controllers/userController.js";
 import {  authorizeUserType, verifyJWT } from "../middlewares/auth.js";
-import { addDrivers, deleteDriver, getAllDrivers, getCurrentDriver, loginDriver, updateDriver, updateDriverStatus, uploadProfileImage, verifyEmail } from "../controllers/driverController.js";
+import { addDrivers, deleteDriver, getAllDrivers, getCurrentDriver, loginDriver, updateDriver, updateDriverStatus, uploadProfileImage, verifyEmail, refreshAccessToken } from "../controllers/driverController.js";
 import { upload } from "../config/cloudinary.js";
 
 // Create a new router

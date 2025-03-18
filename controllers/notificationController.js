@@ -153,6 +153,49 @@ export const createNotification = async (req, res) => {
     }
 };
 
+export const respondToNotification = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { action } = req.body; // "accept" or "decline"
+
+        if (!['accept', 'decline'].includes(action)) {
+            return res.status(400).json({ 
+                StatusCode: 400, 
+                IsSuccess: false, 
+                Message: "Invalid action. Use 'accept' or 'decline'." 
+            });
+        }
+
+        const notification = await Notification.findById(id);
+        if (!notification) {
+            return res.status(404).json({ 
+                StatusCode: 404, 
+                IsSuccess: false, 
+                Message: "Notification not found" 
+            });
+        }
+
+        notification.status = action === 'accept' ? 'accepted' : 'declined';
+        await notification.save();
+
+        res.status(200).json({
+            StatusCode: 200,
+            IsSuccess: true,
+            Message: `Notification ${action}ed successfully`,
+            notification
+        });
+
+    } catch (error) {
+        console.error("Error responding to notification:", error);
+        res.status(500).json({
+            StatusCode: 500,
+            IsSuccess: false,
+            Message: "Failed to respond to notification"
+        });
+    }
+};
+
+
 export const sendRequestStatusNotification = async (request, newStatus) => {
     try {
         const notificationTypes = {

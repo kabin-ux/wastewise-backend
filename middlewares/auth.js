@@ -1,10 +1,5 @@
 import jwt from 'jsonwebtoken';
 import { ACCESS_TOKEN_SECRET } from '../config.js';
-// import RequestService from '../Model/RequestModel.js';
-// import Complaint from '../Model/ComplaintModel.js';
-// import Feedback from '../Model/FeedbackModel.js';
-// import Driver from '../Model/driverModel.js';
-// import Task from '../Model/taskModel.js';
 import User from '../models/userModel.js';
 
 // Middleware to verify the JWT access token

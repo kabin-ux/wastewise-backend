@@ -8,7 +8,6 @@ import jwt from 'jsonwebtoken';
 import { sendEmail } from "../utils/sendVerificationEmail.js";
 import crypto from 'crypto';
 import { cloudinary } from '../config/cloudinary.js';
-import { promisify } from 'util';
 import streamifier from 'streamifier';
 
 

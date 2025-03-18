@@ -44,6 +44,16 @@ const requestSchema = new mongoose.Schema({
   },
   notes: {
     type: String
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now
+  },
+  assignedAt: {
+    type: Date
+  },
+  completedAt: {
+    type: Date
   }
 }, { timestamps: true });
 

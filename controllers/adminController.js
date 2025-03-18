@@ -1,7 +1,8 @@
 // ErrorHandler.js
+import { REFRESH_TOKEN_SECRET } from "../config.js";
 import { cloudinary } from "../config/cloudinary.js";
 import Admin from "../models/adminModel.js";
-import Request from "../models/requestModel.js";
+import  jwt from 'jsonwebtoken';
 import { generateAccessToken, generateRefreshToken } from "../utils/generateToken.js";
 import streamifier from 'streamifier';
 
@@ -108,11 +109,11 @@ export const getCurrentAdmin = async (req, res) => {
       ErrorMessage: [],
       Result: {
         admin: admin,
-        Message: "Current user fetched successfully"
+        Message: "Current admin fetched successfully"
       },
     });
-  } catch (err) {
-    console.error("Error occurred", err);
+  } catch (error) {
+    console.error("Error occurred", error);
 
     return res.status(500).json({
       StatusCode: 500,
@@ -272,37 +273,51 @@ export const uploadProfileImage = async (req, res) => {
 };
 
 
-
-export const assignDriver = async (req, res) => {
-  const { id } = req.params; // Request ID
-  const { driverId } = req.body; // Driver ID from request body
-
+export const refreshAccessToken = async (req, res) => {
   try {
-    // Update the request by ID, set status and assign driverId
-    const updatedRequest = await Request.findByIdAndUpdate(
-      id, // Request ID
-      { status: 'Assigned', driverId }, // Fields to update
-      { new: true } // Return the updated document
-    );
+    const incomingToken = req.headers.authorization?.split(" ")[1];
+    const incomingRefreshToken = incomingToken;
 
-    if (!updatedRequest) {
-      return res.status(404).json({
-        success: false,
-        message: 'Request not found',
-      });
+    if (!incomingRefreshToken) {
+      return res.status(400).json({
+        ErrorMessage: "Unauthorized request"
+      })
+    }
+    //verify tokens
+    const decodedToken = jwt.verify(incomingRefreshToken, REFRESH_TOKEN_SECRET);
+
+    const currentTime = Math.floor(Date.now() / 1000);
+
+
+    //check if refresh token expired or not
+    if (decodedToken.exp < currentTime) {
+      return res.status(400).json({
+        ErrorMessage: "Refresh token has expired"
+      })
     }
 
-    res.status(200).json({
-      success: true,
-      message: 'Driver assigned successfully',
-      updatedRequest,
-    });
+
+    const admin = await Admin.findById(decodedToken?.userId);
+
+    const userType = decodedToken?.userType;
+
+    if (!admin) {
+      res.status(400).json({
+        errorMessage: "Invalid refresh token"
+      })
+    }
+
+    const newAccessToken = await generateAccessToken(admin._id, userType);
+
+    return res.status(200).json({
+      newAccessToken,
+      message: "Access token refreshed"
+    })
+
   } catch (error) {
-    console.error('Error assigning driver:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to assign driver',
-      error: error.message,
-    });
+    console.error("Error occured", error);
+    res.status(401).json({
+      ErrorMessage: "Invalid refresh token"
+    })
   }
 };

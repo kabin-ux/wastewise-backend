@@ -43,13 +43,14 @@ const notificationSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.Mixed,
         default: {}
     },
+    status: { type: String, enum: ['pending', 'accepted', 'declined'], default: 'pending' }, // New field
     createdAt: {
         type: Date,
         default: Date.now
     },
     expiresAt: {
         type: Date,
-        default: () => new Date(+new Date() + 30*24*60*60*1000) // 30 days from creation
+        default: () => new Date(+new Date() + 30 * 24 * 60 * 60 * 1000) // 30 days from creation
     }
 });
 
@@ -59,19 +60,19 @@ notificationSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
 notificationSchema.index({ recipient: 1, recipientModel: 1, isRead: 1 });
 
 // Add a method to mark notification as read
-notificationSchema.methods.markAsRead = async function() {
+notificationSchema.methods.markAsRead = async function () {
     this.isRead = true;
     return this.save();
 };
 
 // Static method to create a notification for multiple recipients
-notificationSchema.statics.createForRecipients = async function(recipients, notificationData) {
+notificationSchema.statics.createForRecipients = async function (recipients, notificationData) {
     const notifications = recipients.map(recipient => ({
         ...notificationData,
         recipient: recipient._id,
         recipientModel: recipient.constructor.modelName
     }));
-    
+
     return this.insertMany(notifications);
 };
 

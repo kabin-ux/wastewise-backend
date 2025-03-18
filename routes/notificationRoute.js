@@ -8,19 +8,14 @@ import {
     sendTestNotification,
     getAdminNotifications,
     getDriverNotifications,
-    deleteNotification
+    deleteNotification,
+    respondToNotification
 } from '../controllers/notificationController.js';
 
 import { authorizeUserType, verifyJWT } from '../middlewares/auth.js';
 import Notification from '../models/notificationModel.js';
 
 const notificationRouter = express.Router();
-
-// Debug routes
-notificationRouter.get('/test', (req, res) => {
-    console.log('Test route hit');
-    res.json({ message: 'Notification routes are working' });
-});
 
 // Core notification routes
 notificationRouter.post('/', verifyJWT, createNotification);
@@ -29,6 +24,7 @@ notificationRouter.get('/driver-notifications', verifyJWT, getDriverNotification
 notificationRouter.get('/admin-notifications', verifyJWT, authorizeUserType('admin'), getAdminNotifications);
 notificationRouter.put('/:id/read', verifyJWT, markAsRead);
 notificationRouter.put('/mark-all-read', verifyJWT, markAllAsRead);
+notificationRouter.post('/:id/respond', respondToNotification);
 notificationRouter.delete('/:id/delete', verifyJWT, deleteNotification);
 
 // Device registration and test routes

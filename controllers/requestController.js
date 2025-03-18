@@ -58,7 +58,8 @@ export const createRequest = async (req, res) => {
       phoneNumber,
       scheduledDate,
       shift,
-      notes
+      notes,
+      createdAt: new Date(), // Add creation timestamp
     });
 
     res.status(201).json({
@@ -107,6 +108,7 @@ export const assignDriver = async (req, res) => {
     // Update request status
     request.driverId = driverId;
     request.status = 'assigned';
+    request.assignedAt = new Date(); // Add assignment timestamp
     await request.save();
 
     // Create notification for the user
@@ -194,11 +196,20 @@ export const updateStatus = async (req, res) => {
   const { id } = req.params;
   const { status } = req.body;
   try {
-    const request = await Request.findByIdAndUpdate(
+
+    const request = await Request.findById(
       id,
-      { status },
       { new: true }
-    );
+    ).populate('userId');
+
+    request.status = status;
+
+    if (status === 'completed') {
+      request.completedAt = new Date();
+    }
+
+    await request.save();
+
 
     if (!request) {
       return res.status(404).json({
@@ -237,7 +248,7 @@ export const updateStatus = async (req, res) => {
     // Driver notification
     const userNotificationData = {
       recipientType: 'user',
-      recipient: request.userId,
+      recipient: request.userId._id,
       title: notificationConfig.title,
       message: notificationConfig.message,
       type: notificationConfig.type,
