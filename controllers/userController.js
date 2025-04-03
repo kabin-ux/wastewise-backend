@@ -81,7 +81,6 @@ export const createUser = async (req, res, next) => {
         Result: [],
       });
     }
-    console.log(existingUser)
     // Create a new user
     const user = await User.create({
       firstName,
@@ -98,7 +97,7 @@ export const createUser = async (req, res, next) => {
       token: crypto.randomBytes(32).toString("hex"),
     })
 
-    const url = `https://leafy-melba-374ea5.netlify.app//users/${user._id}/verify/${token.token}`;
+    const url = `${BASE_URL}/${user._id}/verify/${token.token}`;
 
     await sendEmail(user.email, "Verify Email", url)
 
