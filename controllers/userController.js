@@ -97,7 +97,7 @@ export const createUser = async (req, res, next) => {
       token: crypto.randomBytes(32).toString("hex"),
     })
 
-    const url = `${BASE_URL}/${user._id}/verify/${token.token}`;
+    const url = `${BASE_URL}/users/${user._id}/verify/${token.token}`;
 
     await sendEmail(user.email, "Verify Email", url)
 
