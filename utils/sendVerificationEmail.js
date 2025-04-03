@@ -1,5 +1,5 @@
 import nodemailer from 'nodemailer';
-import { EMAIL_PORT, HOST, PASS, SECURE, SERVICE, USER } from '../config.js';
+import { EMAIL_PORT, HOST, PASS, SECURE, SERVICE, USER } from '../config/config.js';
 
 export const sendEmail = async (email, subject, text) => {
     try {

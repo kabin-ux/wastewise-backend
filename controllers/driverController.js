@@ -3,7 +3,7 @@ import { generateAccessToken, generateRefreshToken } from "../utils/generateToke
 import Driver from '../models/driverModel.js';
 import Token from '../models/emailToken.js';
 import crypto from 'crypto';
-import { BASE_URL, REFRESH_TOKEN_SECRET } from '../config.js';
+import { BASE_URL, REFRESH_TOKEN_SECRET } from '../config/config.js';
 import { sendEmail } from '../utils/sendVerificationEmail.js';
 import DriverToken from '../models/driverToken.js';
 import { cloudinary } from '../config/cloudinary.js';

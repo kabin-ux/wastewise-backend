@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import { ACCESS_TOKEN_SECRET } from '../config.js';
+import { ACCESS_TOKEN_SECRET } from '../config/config.js';
 import User from '../models/userModel.js';
 
 // Middleware to verify the JWT access token

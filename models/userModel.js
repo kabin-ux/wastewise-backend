@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 import jwt from 'jsonwebtoken';
-import { ACCESS_TOKEN_SECRET, REFRESH_TOKEN_EXPIRY, REFRESH_TOKEN_SECRET } from "../config.js";
+import { ACCESS_TOKEN_SECRET, REFRESH_TOKEN_EXPIRY, REFRESH_TOKEN_SECRET } from "../config/config.js";
 
 // Define the user schema
 const userSchema = new mongoose.Schema({
@@ -41,11 +41,13 @@ const userSchema = new mongoose.Schema({
     type: [String],
     default: [],
     validate: {
-      validator: function (tokens) {
-        // Check for duplicates within the array
-        return new Set(tokens).size === tokens.length;
+      validator: function(tokens) {
+        // Check for duplicates and undefined values
+        if (!Array.isArray(tokens)) return false;
+        const validTokens = tokens.filter(token => token !== undefined && token !== null);
+        return new Set(validTokens).size === validTokens.length;
       },
-      message: 'Duplicate FCM tokens are not allowed'
+      message: 'FCM tokens must be unique and cannot be undefined'
     }
   },
   refreshToken: {

@@ -1,5 +1,5 @@
 // ErrorHandler.js
-import { REFRESH_TOKEN_SECRET } from "../config.js";
+import { REFRESH_TOKEN_SECRET } from "../config/config.js";
 import { cloudinary } from "../config/cloudinary.js";
 import Admin from "../models/adminModel.js";
 import  jwt from 'jsonwebtoken';

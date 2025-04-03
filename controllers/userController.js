@@ -1,4 +1,4 @@
-import { BASE_URL, REFRESH_TOKEN_SECRET } from "../config.js";
+import { BASE_URL, REFRESH_TOKEN_SECRET } from "../config/config.js";
 import mongoose from "mongoose";
 import Token from "../models/emailToken.js";
 import User from "../models/userModel.js";
@@ -81,6 +81,7 @@ export const createUser = async (req, res, next) => {
         Result: [],
       });
     }
+    console.log(existingUser)
     // Create a new user
     const user = await User.create({
       firstName,
@@ -97,7 +98,7 @@ export const createUser = async (req, res, next) => {
       token: crypto.randomBytes(32).toString("hex"),
     })
 
-    const url = `${BASE_URL}/users/${user._id}/verify/${token.token}`;
+    const url = `https://leafy-melba-374ea5.netlify.app//users/${user._id}/verify/${token.token}`;
 
     await sendEmail(user.email, "Verify Email", url)
 

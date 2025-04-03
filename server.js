@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import connectToDB from "./database/db.js";
 import userRouter from "./routes/userRoute.js";
-import { PORT } from "./config.js";
+import { PORT } from "./config/config.js";
 import initializeAdmin from "./utils/autoAdminCreation.js";
 import adminRouter from "./routes/adminRoute.js";
 import requestRouter from "./routes/requestRoute.js";
