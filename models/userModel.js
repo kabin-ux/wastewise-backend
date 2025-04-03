@@ -1,9 +1,15 @@
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 import jwt from 'jsonwebtoken';
-import { ACCESS_TOKEN_SECRET, REFRESH_TOKEN_EXPIRY, REFRESH_TOKEN_SECRET } from "../config/config.js";
+import { ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET } from "../config/config.js";
 
-// Define the user schema
+// First, drop the existing index if it exists
+try {
+  await mongoose.connection.collection('users').dropIndex('fcmTokens_1');
+} catch (err) {
+  // Index might not exist, continue
+}
+
 const userSchema = new mongoose.Schema({
   firstName: {
     type: String,
@@ -16,6 +22,7 @@ const userSchema = new mongoose.Schema({
   email: {
     type: String,
     required: true,
+    unique: true,
   },
   address: {
     type: String,
@@ -27,7 +34,7 @@ const userSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: true, // Assuming you're including password in the user model
+    required: true,
   },
   verified: {
     type: Boolean,
@@ -39,68 +46,90 @@ const userSchema = new mongoose.Schema({
   },
   fcmTokens: {
     type: [String],
-    default: [],
-    validate: {
-      validator: function(tokens) {
-        // Check for duplicates and undefined values
-        if (!Array.isArray(tokens)) return false;
-        const validTokens = tokens.filter(token => token !== undefined && token !== null);
-        return new Set(validTokens).size === validTokens.length;
-      },
-      message: 'FCM tokens must be unique and cannot be undefined'
+    default: undefined,
+    set: function(tokens) {
+      if (!tokens) return undefined;
+      if (!Array.isArray(tokens)) return [tokens].filter(Boolean);
+      return tokens.filter(Boolean);
     }
   },
   refreshToken: {
     type: String
   }
-},
-  {
-    timestamps: true
-  }
-);
-
+}, {
+  timestamps: true
+});
 
 // Password Encryption
 userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) return next();
-
   this.password = await bcrypt.hash(this.password, 10);
-  next()
+  next();
 });
 
 // Check Password
 userSchema.methods.isPasswordCorrect = async function (password) {
-  return await bcrypt.compare(password, this.password)
+  return await bcrypt.compare(password, this.password);
 };
 
 // Generate Access Token
 userSchema.methods.generateAccessToken = function (userId, userType) {
   return jwt.sign(
     {
-      userId, userType
+      userId,
+      userType
     },
     ACCESS_TOKEN_SECRET,
     {
       expiresIn: "10d"
     }
-  )
+  );
 };
 
 // Generate Refresh Token
 userSchema.methods.generateRefreshToken = function (userId, userType) {
   return jwt.sign(
     {
-      userId, userType
+      userId,
+      userType
     },
     REFRESH_TOKEN_SECRET,
     {
       expiresIn: "10d"
     }
-  )
+  );
 };
 
-// Remove any existing index on fcmTokens
-userSchema.index({ fcmTokens: 1 }, { unique: false, sparse: true, background: true });
+// Add method to safely add FCM token
+userSchema.methods.addFcmToken = function(token) {
+  if (!token) return;
+  if (!this.fcmTokens) this.fcmTokens = [];
+  if (!this.fcmTokens.includes(token)) {
+    this.fcmTokens.push(token);
+  }
+};
+
+// Add method to safely remove FCM token
+userSchema.methods.removeFcmToken = function(token) {
+  if (!token || !this.fcmTokens) return;
+  this.fcmTokens = this.fcmTokens.filter(t => t !== token);
+};
+
+// Remove all indexes first
+userSchema.indexes().forEach(async (index) => {
+  try {
+    await mongoose.connection.collection('users').dropIndex(index[0]);
+  } catch (err) {
+    // Index might not exist, continue
+  }
+});
+
+// Add only the email unique index
+userSchema.index({ email: 1 }, { unique: true });
 
 const User = mongoose.model("User", userSchema);
+
+// Ensure indexes are created properly
+User.createIndexes().catch(console.error);
+
 export default User;
