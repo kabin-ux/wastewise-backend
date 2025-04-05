@@ -6,7 +6,7 @@ import User from "../models/userModel.js";
 export const getAllFeedbacks = async (req, res) => {
     try {
         const feedbacks = await Feedback.find().populate('userId', 'firstName lastName email profileImage').populate('requestId', 'type').lean() //Optimized Query;
-        
+
         res.status(200).json({
             StatusCode: 200,
             IsSuccess: true,
