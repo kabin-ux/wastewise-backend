@@ -26,10 +26,10 @@ export const getAllRequests = async (req, res) => {
 
 // Create new request
 export const createRequest = async (req, res) => {
-  const { type, address, phoneNumber, scheduledDate, shift, notes } = req.body;
+  const { type, address, phoneNumber, scheduledDate, shift, weight, notes } = req.body;
 
   // Validate required fields
-  if (!type || !address || !scheduledDate) {
+  if (!type || !address || !scheduledDate || !weight) {
     return res.status(400).json({
       StatusCode: 400,
       IsSuccess: false,
@@ -58,6 +58,7 @@ export const createRequest = async (req, res) => {
       phoneNumber,
       scheduledDate,
       shift,
+      weight,
       notes,
       createdAt: new Date(), // Add creation timestamp
     });

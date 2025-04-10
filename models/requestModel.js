@@ -23,7 +23,7 @@ const requestSchema = new mongoose.Schema({
   status: {
     type: String,
     required: true,
-    enum: ['pending', 'assigned', 'on_the_way', 'completed', 'cancelled'],
+    enum: ['pending', 'assigned', 'on_the_way', 'completed', 'cancelled', 'missed'],
     default: 'pending'
   },
   address: {
@@ -40,6 +40,10 @@ const requestSchema = new mongoose.Schema({
   },
   shift: {
     type: String,
+    required: true
+  },
+  weight:{
+    type: Number,
     required: true
   },
   notes: {

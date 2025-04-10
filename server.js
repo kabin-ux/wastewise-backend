@@ -13,6 +13,7 @@ import feedbackRouter from "./routes/feedbackRoute.js";
 import authRouter from "./routes/authRoute.js";
 import notificationRouter from "./routes/notificationRoute.js";
 import { multerErrorHandler } from "./middlewares/errorHandler.js";
+import recyclineGuidelineRouter from "./routes/recyclingGuidelineRoute.js";
 
 // Load environment variables
 dotenv.config();
@@ -32,6 +33,7 @@ app.use("/api/requests", requestRouter);
 app.use("/api/inventory", inventoryRouter);
 app.use("/api/feedbacks", feedbackRouter);
 app.use("/api/notifications", notificationRouter);
+app.use("/api/recycling-guideline", recyclineGuidelineRouter);
 app.use(multerErrorHandler);
 
 const runServer = async () => {
