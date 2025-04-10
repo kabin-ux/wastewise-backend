@@ -60,7 +60,10 @@ const driverSchema = new mongoose.Schema({
     },
     fcmTokens: [{
         type: String
-    }]
+    }],
+},
+{
+    timestamps: true
 });
 
 // Password Encryption
