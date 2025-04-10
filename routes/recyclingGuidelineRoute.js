@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { createGuideline, deleteGuideline, getGuidelineById, getGuidelines, updateGuideline } from '../controllers/recyclingguidlelineController.js';
+import { createGuideline, deleteGuideline, getGuidelineById, getGuidelines, updateGuideline } from '../controllers/recyclingGuidlelineController.js';
 import { verifyJWT } from '../middlewares/auth.js';
 
 const recyclineGuidelineRouter = Router();
