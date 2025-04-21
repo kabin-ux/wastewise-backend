@@ -198,21 +198,26 @@ export const getCurrentUser = async (req, res) => {
 
 export const updateUser = async (req, res, next) => {
   const { uid } = req.params;
-  const { firstName, lastName, email, address, phoneNumber, password, NID } = req.body;
+  const { firstName, lastName, email, address, phoneNumber, password, NID, profileImage } = req.body;
 
   try {
     // Prepare the data to update
     const updateData = { firstName, lastName, email, address, phoneNumber, NID };
 
-    // Handle profile image upload
-    if (req.file) {
-      // If user already has a profile image, delete it from Cloudinary
+    // Handle profile image
+    if (profileImage === null) {
+      // If explicitly set to null, remove the image from Cloudinary and database
       const user = await User.findById(uid);
       if (user?.profileImage?.public_id) {
         await cloudinary.uploader.destroy(user.profileImage.public_id);
       }
-
-      // Add new profile image data
+      updateData.profileImage = null;
+    } else if (req.file) {
+      // If new image is being uploaded
+      const user = await User.findById(uid);
+      if (user?.profileImage?.public_id) {
+        await cloudinary.uploader.destroy(user.profileImage.public_id);
+      }
       updateData.profileImage = {
         public_id: req.file.filename,
         url: req.file.path

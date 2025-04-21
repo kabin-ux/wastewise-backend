@@ -43,8 +43,6 @@ export const createFeedback = async (req, res) => {
 
         const fullName = user ? `${user.firstName} ${user.lastName}` : "Anonymous";
 
-
-
         // Create the Feedback in the database
         const feedback = await Feedback.create({
             userId: req.user.userId, // User ID from authentication middleware,

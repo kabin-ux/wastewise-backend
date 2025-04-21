@@ -9,7 +9,7 @@ export const generateAccessToken = (userId, userType) => {
     },
     ACCESS_TOKEN_SECRET, 
     { 
-      expiresIn: '5s' 
+      expiresIn: '15m' 
     });
 };
 
