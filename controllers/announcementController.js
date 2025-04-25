@@ -20,7 +20,11 @@ export const createAnnouncement = async (req, res) => {
             Message: "Announcement created successfully",
         });
     } catch (err) {
-        res.status(500).json({ message: 'Error creating announcement', error: err.message });
+        res.status(500).json({ 
+            StatusCode: 500,
+            IsSuccess: false,
+            ErrorMessage: "Error creating announcement", error: err.message
+         });
     }
 };
 
@@ -34,7 +38,11 @@ export const getAllAnnouncements = async (req, res) => {
             Message: "Announcements retrieved Successfully"
         });
     } catch (err) {
-        res.status(500).json({ message: 'Error fetching announcements', error: err.message });
+        res.status(500).json({ 
+            StatusCode: 500,
+            IsSuccess: false,
+            ErrorMessage: "Error fetching announcement", error: err.message
+         });
     }
 };
 
@@ -43,11 +51,25 @@ export const getAnnouncementById = async (req, res) => {
         const { id } = req.params;
         const announcement = await Announcement.findById(id);
         if (!announcement) {
-            return res.status(404).json({ message: 'Announcement not found' });
+            return res.status(404).json({ 
+                StatusCode: 404,
+                IsSuccess: false,
+                ErrorMessage: "Error finding announcement"
+             });
         }
-        res.status(200).json(announcement);
+        res.status(200).json(
+            {
+                StatusCode: 200,
+                IsSuccess: true,
+                Message: "Announcement fetched successfully"
+            }
+        );
     } catch (err) {
-        res.status(500).json({ message: 'Error fetching announcement', error: err.message });
+        res.status(500).json({ 
+            StatusCode: 500,
+            IsSuccess: false,
+            ErrorMessage: "Error fetching announcement", error: err.message
+         });
     }
 }
 
@@ -62,7 +84,11 @@ export const getUserAnnouncements = async (req, res) => {
             Message: "Announcements retrieved Successfully"
         });
     } catch (err) {
-        res.status(500).json({ message: 'Error fetching announcements', error: err.message });
+        res.status(500).json({ 
+            StatusCode: 500,
+            IsSuccess: false,
+            ErrorMessage: "Error fetching announcement", error: err.message
+         });
     }
 };
 
@@ -77,7 +103,11 @@ export const getDriverAnnouncements = async (req, res) => {
             Message: "Announcements retrieved Successfully"
         });
     } catch (err) {
-        res.status(500).json({ message: 'Error fetching announcements', error: err.message });
+        res.status(500).json({ 
+            StatusCode: 500,
+            IsSuccess: false,
+            ErrorMessage: "Error fetching announcement", error: err.message
+         });
     }
 };
 
@@ -117,11 +147,23 @@ export const deleteAnnouncement = async (req, res) => {
         const { id } = req.params;
         const announcement = await Announcement.findByIdAndDelete(id);
         if (!announcement) {
-            return res.status(404).json({ message: 'Announcement not found' });
+            return res.status(404).json({ 
+                StatusCode: 404,
+                IsSuccess: false,
+                ErrorMessage: "Error finding announcement", error: err.message
+             });
         }
-        res.status(200).json({ message: 'Announcement deleted' });
+        res.status(200).json({
+            StatusCode: 200,
+            IsSuccess: false,
+            Message: "Announcement deleted successfully"
+        });
     } catch (err) {
-        res.status(500).json({ message: 'Error deleting announcement', error: err.message });
+        res.status(500).json({ 
+            StatusCode: 500,
+            IsSuccess: false,
+            ErrorMessage: "Error deleting announcement", error: err.message
+         });
     }
 };
 
