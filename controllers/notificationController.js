@@ -159,19 +159,19 @@ export const respondToNotification = async (req, res) => {
         const { action } = req.body; // "accept" or "decline"
 
         if (!['accept', 'decline'].includes(action)) {
-            return res.status(400).json({ 
-                StatusCode: 400, 
-                IsSuccess: false, 
-                Message: "Invalid action. Use 'accept' or 'decline'." 
+            return res.status(400).json({
+                StatusCode: 400,
+                IsSuccess: false,
+                Message: "Invalid action. Use 'accept' or 'decline'."
             });
         }
 
         const notification = await Notification.findById(id);
         if (!notification) {
-            return res.status(404).json({ 
-                StatusCode: 404, 
-                IsSuccess: false, 
-                Message: "Notification not found" 
+            return res.status(404).json({
+                StatusCode: 404,
+                IsSuccess: false,
+                Message: "Notification not found"
             });
         }
 
@@ -438,7 +438,12 @@ export const registerDevice = async (req, res) => {
             return res.status(404).json({ error: `${userType} not found` });
         }
 
-        // Clean up tokens for this user only
+        // Ensure fcmTokens array is initialized
+        if (!Array.isArray(user.fcmTokens)) {
+            user.fcmTokens = [];
+        }
+
+        // Clean up old/duplicate tokens for this user
         user.fcmTokens = user.fcmTokens.filter(token =>
             token && token.includes(':') && token !== fcmToken
         );

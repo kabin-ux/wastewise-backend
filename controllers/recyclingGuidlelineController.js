@@ -4,7 +4,7 @@ export const createGuideline = async (req, res) => {
     try {
         const { category, title, items, tips } = req.body;
 
-        if (!category || !title || !items ) {
+        if (!category || !title || !items) {
             return res.status(400).json({ message: "All fields are required" });
         }
 
