@@ -20,7 +20,5 @@ announcementRouter.put('/:id',
 );
 
 
-// announcementRouter.get('/user-announcements', verifyJWT, authorizeUserType('user'), getDi);
-
 
 export default announcementRouter;

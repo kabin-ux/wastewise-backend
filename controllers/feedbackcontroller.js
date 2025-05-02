@@ -97,14 +97,6 @@ export const updateFeedback = async (req, res) => {
             });
         }
 
-        // if (existingFeedback.userId.toString() !== userId && userRole !== "admin") {
-        //     return res.status(403).json({
-        //         StatusCode: 403,
-        //         IsSuccess: false,
-        //         Message: "Access Forbidden: You can only update your own feedback",
-        //     });
-        // }
-
         const updatedFeedback = await Feedback.findByIdAndUpdate(
             id,
             req.body,

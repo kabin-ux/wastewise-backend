@@ -26,7 +26,7 @@ export const createGuideline = async (req, res) => {
             StatusCode: 500,
             IsSuccess: false,
             Message: "Internal Server Error",
-            error: error.message
+            ErrorMessage: error.message
         })
     }
 }
@@ -51,7 +51,7 @@ export const getGuidelines = async (req, res) => {
             StatusCode: 500,
             IsSuccess: false,
             Message: "Internal Server Error",
-            error: error.message
+            ErrorMessage: error.message
         })
     }
 };
@@ -125,7 +125,7 @@ export const updateGuideline = async (req, res) => {
             StatusCode: 500,
             IsSuccess: false,
             Message: "Internal Server Error",
-            error: error.message
+            ErrorMessage: error.message
         })
     }
 };
@@ -157,7 +157,7 @@ export const deleteGuideline = async (req, res) => {
             StatusCode: 500,
             IsSuccess: false,
             Message: "Internal Server Error",
-            error: error.message
+            ErrorMessage: error.message
         })
     }
 };

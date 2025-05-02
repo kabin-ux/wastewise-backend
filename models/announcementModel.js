@@ -12,7 +12,7 @@ const announcementSchema = new mongoose.Schema({
     },
     audience: {
       type: String,
-      enum: ['all', 'user', 'drivers'], // customize based on roles in your system
+      enum: ['all', 'user', 'drivers'], 
       default: 'all',
     },
     createdBy: {
@@ -22,9 +22,6 @@ const announcementSchema = new mongoose.Schema({
     createdAt: {
       type: Date,
       default: Date.now,
-    },
-    visibleUntil: {
-      type: Date,
     },
   });
 

@@ -104,7 +104,7 @@ export const createNotificationInternal = async (notificationData) => {
 
                 if (response.failureCount > 0) {
                     const failedTokens = response.responses
-                        .map((resp, idx) => !resp.IsSucces ? fcmTokens[idx] : null)
+                        .map((resp, idx) => !resp.success ? fcmTokens[idx] : null)
                         .filter(Boolean);
 
                     if (failedTokens.length > 0) {

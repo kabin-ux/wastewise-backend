@@ -24,23 +24,53 @@ export const getAllRequests = async (req, res) => {
   }
 };
 
-// Create new request
+
 export const createRequest = async (req, res) => {
   const { type, address, phoneNumber, scheduledDate, shift, weight, notes } = req.body;
 
-  // Validate required fields
+  // Basic Required Field Check
   if (!type || !address || !scheduledDate || !weight) {
     return res.status(400).json({
       StatusCode: 400,
       IsSuccess: false,
-      Message: "Type, address, and scheduled date are required.",
+      Message: "Type, address, scheduled date, and weight are required.",
+    });
+  }
+
+  // Validate date (scheduledDate should be a future date)
+  const scheduled = new Date(scheduledDate);
+  const now = new Date();
+
+  if (isNaN(scheduled.getTime()) || scheduled <= now) {
+    return res.status(400).json({
+      StatusCode: 400,
+      IsSuccess: false,
+      Message: "Scheduled date must be a valid future date.",
+    });
+  }
+
+  // Validate weight
+  if ( weight <= 0 || weight > 1000) {
+    return res.status(400).json({
+      StatusCode: 400,
+      IsSuccess: false,
+      Message: "Weight must be a number between 1 and 1000.",
+    });
+  }
+
+  // Validate phone number (Nepali phone format: 98xxxxxxxx or landline)
+  const phoneRegex = /^(98\d{8}|01\d{7,8})$/;
+  if (phoneNumber && !phoneRegex.test(phoneNumber)) {
+    return res.status(400).json({
+      StatusCode: 400,
+      IsSuccess: false,
+      Message: "Invalid phone number format.",
     });
   }
 
   try {
-    // Fetch the user from the database using the userId from the token
+    // Fetch user
     const user = await User.findById(req.user.userId);
-
     if (!user) {
       return res.status(404).json({
         StatusCode: 404,
@@ -49,10 +79,28 @@ export const createRequest = async (req, res) => {
       });
     }
 
-    // Create the request using the user's name
+    // Prevent duplicate request on same date & address (optional)
+    const duplicate = await Request.findOne({
+      userId: user._id,
+      scheduledDate: {
+        $gte: new Date(scheduled.setHours(0, 0, 0, 0)),
+        $lt: new Date(scheduled.setHours(23, 59, 59, 999))
+      },
+      address
+    });
+
+    if (duplicate) {
+      return res.status(409).json({
+        StatusCode: 409,
+        IsSuccess: false,
+        ErrorMessage: "You have already made a request for this date and address.",
+      });
+    }
+
+    // Create the request
     const request = await Request.create({
-      userId: req.user.userId,
-      name: user.firstName + " " + user.lastName, // Extracted from the User table
+      userId: user._id,
+      name: `${user.firstName} ${user.lastName}`,
       type,
       address,
       phoneNumber,
@@ -60,24 +108,28 @@ export const createRequest = async (req, res) => {
       shift,
       weight,
       notes,
-      createdAt: new Date(), // Add creation timestamp
+      createdAt: new Date(),
+      status: 'pending' // default status
     });
 
     res.status(201).json({
       StatusCode: 201,
       IsSuccess: true,
       request,
-      Message: "Request added successfully"
+      Message: "Request created successfully.",
     });
+
   } catch (error) {
     console.error("Error creating request:", error);
     res.status(500).json({
       StatusCode: 500,
       IsSuccess: false,
       ErrorMessage: "Failed to create request",
+      details: error.message,
     });
   }
 };
+
 
 
 // Assign driver to request

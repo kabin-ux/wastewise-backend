@@ -1,7 +1,7 @@
 import { getIdFromToken } from "../middlewares/auth.js";
 import Inventory from "../models/inventoryModel.js";
 
-// Get all requests
+// Get all items
 export const getAllItems = async (req, res) => {
     try {
         const items = await Inventory.find();
@@ -30,7 +30,7 @@ export const getAllItems = async (req, res) => {
     }
 };
 
-// Create new request
+// Create new item
 export const addItem = async (req, res) => {
     const { name, category, quantity, price, purchaseDate, status } = req.body;
 
