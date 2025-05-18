@@ -1,4 +1,4 @@
-import { BASE_URL, REFRESH_TOKEN_SECRET } from "../config/config.js";
+import { BASE_URL, PASSWORD_SECRET, REFRESH_TOKEN_SECRET } from "../config/config.js";
 import mongoose from "mongoose";
 import Token from "../models/emailToken.js";
 import User from "../models/userModel.js";
@@ -372,7 +372,6 @@ export const deleteUser = async (req, res, next) => {
 };
 
 // User login
-
 export const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
@@ -396,7 +395,7 @@ export const loginUser = async (req, res) => {
       return res.status(401).json({
         StatusCode: 401,
         IsSuccess: false,
-        ErrorMessage: "Invalid user credentials",
+        ErrorMessage: "Invalid password entered",
         Result: [],
       });
     }
@@ -614,6 +613,86 @@ export const verifyEmail = async (req, res) => {
       IsSuccess: false,
       ErrorMessage: "Internal Server Error",
       Result: [],
+    });
+  }
+};
+
+
+export const forgotPassword = async (req, res, next) => {
+  try {
+    let { email } = req.body;
+    let result = await User.findOne({ email: email });
+
+    if (result) {
+      // Generate token
+      let infoObj = {
+        _id: result._id,
+      };
+
+      let expiryInfo = {
+        expiresIn: "5d",
+      };
+
+      let token = await jwt.sign(infoObj, PASSWORD_SECRET, expiryInfo);
+      
+      await sendEmail(
+        email,
+        "Reset password",
+        `Here is the link for your password reset:\nhttp://localhost:3000/reset-password?token=${token}`
+      );
+
+      res.status(200).json({
+        StatusCode: 200,
+        IsSuccess: true,
+        Message: "Password reset link has been sent successfully",
+      });
+    } else {
+      res.status(404).json({
+        StatusCode: 404,
+        IsSuccess: false,
+        ErrorMessage: "Email does not exist",
+        Result: []
+      });
+    }
+  } catch (error) {
+    res.status(400).json({
+      StatusCode: 400,
+      IsSuccess: false,
+      ErrorMessage: error.message,
+      Result: []
+    });
+  }
+};
+
+export const resetPassword = async (req, res, next) => {
+  try {
+    let _id = req._id;
+
+    let { password } = req.body;
+
+    let hashPassword = await bcrypt.hash(password, 10);
+
+    let result = await User.findByIdAndUpdate(
+      _id,
+      {
+        password: hashPassword,
+      },
+      {
+        new: true,
+      }
+    );
+
+    res.status(201).json({
+      StatusCode: 201,
+      IsSuccess: true,
+      Message: "Password reset successfully.",
+      data: result,
+    });
+  } catch (error) {
+    res.status(400).json({
+      StatusCode: 400,
+      IsSuccess: false,
+      ErrorMessage: error.message,
     });
   }
 };

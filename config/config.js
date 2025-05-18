@@ -1,4 +1,4 @@
-import {config} from 'dotenv';
+import { config } from 'dotenv';
 
 config();
 
@@ -44,4 +44,6 @@ export let FIREBASE_CLIENT_CERT_URL = process.env.FIREBASE_CLIENT_CERT_URL;
 export let CLOUDINARY_CLOUD_NAME = process.env.CLOUDINARY_CLOUD_NAME;
 export let CLOUDINARY_API_KEY = process.env.CLOUDINARY_API_KEY;
 export let CLOUDINARY_API_SECRET = process.env.CLOUDINARY_API_SECRET;
+
+export let PASSWORD_SECRET = process.env.PASSWORD_SECRET;
 
